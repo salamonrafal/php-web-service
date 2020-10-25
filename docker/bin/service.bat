@@ -1,7 +1,7 @@
 @ECHO OFF
 
 SET IMAGE_NAME=rafcio0584/php-web-container
-SET TAG_NAME=0.0.1-symfony
+SET TAG_NAME=0.0.2-symfony
 SET VERSION_FILE_NAME=.version
 SET LIST_ACTIONS=build-image remove-image help create-container start-container remove-container pause-container stop-container ssh run-container cmd-container
 SET CONTAINER_NAME=web-server

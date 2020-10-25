@@ -85,7 +85,7 @@ EXIT /B 0
     SET CONTAINER_ALTERNATIVE_PORT=8080
     SET CONTAINER_PHP_FPM_PORT=9000
 
-    docker container create -v "%CURRENT_DIR%\\:/var/www/web-server/" -i -a STDERR --log-driver json-file --env-file ./docker/container.env-file --expose %CONTAINER_WEB_PORT% --expose %CONTAINER_PHP_FPM_PORT% --expose %CONTAINER_ALTERNATIVE_PORT% -p %CONTAINER_ALTERNATIVE_PORT%:%CONTAINER_ALTERNATIVE_PORT% -p %CONTAINER_PHP_FPM_PORT%:%CONTAINER_PHP_FPM_PORT% -p %CONTAINER_WEB_PORT%:%CONTAINER_WEB_PORT% --name %~3 --rm %IMAGE_NAME%
+    docker container create -v "%CURRENT_DIR%\\:/var/www/web-server/" -i -a STDERR --log-driver json-file --env-file ./docker/container.env-file --expose %CONTAINER_WEB_PORT% --expose %CONTAINER_PHP_FPM_PORT% --expose %CONTAINER_ALTERNATIVE_PORT% -p %CONTAINER_ALTERNATIVE_PORT%:%CONTAINER_ALTERNATIVE_PORT% -p %CONTAINER_PHP_FPM_PORT%:%CONTAINER_PHP_FPM_PORT% -p %CONTAINER_WEB_PORT%:%CONTAINER_WEB_PORT% --name %~3 %IMAGE_NAME%
 EXIT /B 0
 
 :do_docker_run_container

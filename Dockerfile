@@ -34,6 +34,7 @@ COPY . /var/www/web-server/
 COPY ./docker/php-fpm/www.conf /etc/php/7.4/fpm/pool.d/
 COPY ./docker/nginx/sites-available/ /etc/nginx/sites-available/
 COPY ./docker/nginx/sites-available/ /etc/nginx/sites-enabled/
+COPY ./docker/nginx/snippets/ /etc/nginx/snippets/
 COPY ./docker/entrypoint.sh /etc/entrypoint.sh
 
 RUN chmod -R 777 /var/www/web-server/

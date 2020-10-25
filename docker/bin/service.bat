@@ -1,9 +1,9 @@
 @ECHO OFF
 
 SET IMAGE_NAME=rafcio0584/php-web-container
-SET TAG_NAME=0.0.3
+SET TAG_NAME=0.0.1-symfony
 SET VERSION_FILE_NAME=.version
-SET LIST_ACTIONS=build-image remove-image help create-container start-container remove-container pause-container stop-container ssh run-container
+SET LIST_ACTIONS=build-image remove-image help create-container start-container remove-container pause-container stop-container ssh run-container cmd-container
 SET CONTAINER_NAME=web-server
 SET CURRENT_DIR=%cd%
 
@@ -56,6 +56,17 @@ CALL :normalizeForDocker CURRENT_DIR
             CALL :print_info_container %CONTAINER_NAME% , %IMAGE_NAME% , %TAG_NAME% , "Container Stopped"
         )
 
+        IF "%%s" == "cmd-container" (
+            IF [%2]==[] (
+                ECHO Empty command
+                EXIT /B 1
+            )
+
+            CALL :do_docker_run_cmd_container %CONTAINER_NAME% %2
+            CALL :print_info_container %CONTAINER_NAME% , %IMAGE_NAME% , %TAG_NAME% , "Container Command Executed"
+        )
+
+
         IF "%%s" == "ssh" (
             CALL :do_docker_login_ssh_to_container %CONTAINER_NAME%
         )
@@ -76,6 +87,10 @@ EXIT /B 0
 
 :do_docker_remove_image
     docker image rm %~1:%~2
+EXIT /B 0
+
+:do_docker_run_cmd_container
+    docker exec -w /var/www/web-server/ %~1 %~2
 EXIT /B 0
 
 

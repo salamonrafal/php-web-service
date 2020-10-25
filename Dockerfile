@@ -44,4 +44,8 @@ RUN chown -R www-data:www-data /var/www/welcome/
 
 EXPOSE 80 8080
 
-ENTRYPOINT service php7.4-fpm restart && service nginx start && /bin/bash
+ENTRYPOINT service php7.4-fpm restart && \
+    service nginx start && \
+    (cd /var/www/web-server/ && \
+    composer install) && \
+    /bin/bash

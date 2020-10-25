@@ -10,6 +10,7 @@ This is docker image with simply configuration NGINX & PHP 7.4 in one container 
 * Run container
 * Remove container
 * SSH
+* Run composer install
 
 ### Build image 
 
@@ -93,6 +94,18 @@ This is docker image with simply configuration NGINX & PHP 7.4 in one container 
 * Windows PowerShell terminal:
 ```powershell
 ./docker/bin/service.bat ssh
+```
+
+### Run composer install
+
+* Windows CMD:
+```batch
+"./docker/bin/service.bat" cmd-container "composer install"
+```
+
+* Windows PowerShell terminal:
+```powershell
+./docker/bin/service.bat cmd-container "composer install"
 ```
 
 ## Mounted directories

@@ -8,4 +8,22 @@
     <option name="PARAMETERS" value="cmd-container &quot;composer install&quot;" />
     <method v="2" />
   </configuration>
+  <configuration default="false" name="Composer update" type="BatchConfigurationType" factoryName="Batch" folderName="Docker">
+    <module name="php-web-service" />
+    <option name="INTERPRETER_OPTIONS" value="" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+    <option name="PARENT_ENVS" value="true" />
+    <option name="SCRIPT_NAME" value="$PROJECT_DIR$/docker/bin/service.bat" />
+    <option name="PARAMETERS" value="cmd-container &quot;composer update&quot;" />
+    <method v="2" />
+  </configuration>
+  <configuration default="false" name="phpcs" type="BatchConfigurationType" factoryName="Batch" folderName="Docker">
+    <module name="php-web-service" />
+    <option name="INTERPRETER_OPTIONS" value="" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+    <option name="PARENT_ENVS" value="true" />
+    <option name="SCRIPT_NAME" value="$PROJECT_DIR$/docker/bin/service.bat" />
+    <option name="PARAMETERS" value="cmd-container &quot;./vendor/bin/phpcs --standard=PSR2 ./src&quot;" />
+    <method v="2" />
+  </configuration>
 </component>

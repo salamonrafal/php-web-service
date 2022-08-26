@@ -1,51 +1,48 @@
-FROM ubuntu:20.10
-ENV TZ=Europe/Warsaw
+ARG TIME_ZONE=Europe/Warsaw
+
+FROM ubuntu:22.10 as base_build
+ENV TZ="$TIME_ZONE"
 LABEL pl.salamonrafal.version="0.0.3" pl.salamonrafal.author="Rafal\ Salamon\ <rasa@salamonrafal.pl>"
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-RUN apt-get -yqq update && apt-get -yqq install nginx \
-    php \
-    php-cli \
-    php-fpm \
-    php-json \
-    php-pdo \
-    php-mysql \
-    php-mongodb \
-    php-curl \
-    php-zip \
-    php-gd \
-    php-mbstring \
-    php-curl \
-    php-xml \
-    php-pear \
-    php-bcmath \
-    php-xmlrpc \
-    php-pgsql \
-    mc \
+RUN apt-get -yqq update && apt-get --no-install-recommends -yqq install nginx curl \
+    php8.1 php8.1-cli php8.1-fpm \
+    php8.1-pdo php8.1-mysql php8.1-mongodb php8.1-pgsql \
+    php8.1-curl php8.1-zip php8.1-curl php8.1-xml php8.1-bcmath php8.1-xmlrpc php8.1-gd php8.1-mbstring\
+    mc nano wget sudo\
     && rm -rf /var/lib/apt/lists/*
-RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-RUN php -r "if (hash_file('sha384', 'composer-setup.php') === 'c31c1e292ad7be5f49291169c0ac8f683499edddcfd4e42232982d0fd193004208a58ff6f353fde0012d35fdd72bc394') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
-RUN php composer-setup.php
-RUN php -r "unlink('composer-setup.php');"
-RUN mv composer.phar /usr/local/bin/composer
+COPY --from=composer:2.4 /usr/bin/composer /usr/bin/composer
 
-COPY docker/nginx/welcome-html /var/www/welcome/
+FROM base_build as setup_service
+COPY ./docker/nginx/welcome-html /var/www/welcome/
 COPY . /var/www/web-server
-COPY docker/php-fpm/www.conf /etc/php/7.4/fpm/pool.d/
-COPY docker/nginx/sites-available /etc/nginx/sites-available/
-COPY docker/nginx/sites-available /etc/nginx/sites-enabled/
-COPY docker/nginx/snippets /etc/nginx/snippets/
-COPY docker/entrypoint.sh /etc/entrypoint.sh
+COPY ./docker/php-fpm/www.conf /etc/php/7.4/fpm/pool.d/
+COPY ./docker/nginx/sites-available /etc/nginx/sites-available/
+COPY ./docker/nginx/sites-available /etc/nginx/sites-enabled/
+COPY ./docker/nginx/snippets /etc/nginx/snippets/
+COPY ./docker/entrypoint.sh /etc/entrypoint.sh
+
+FROM setup_service as setup_sudo_access
+
+RUN sed -i /etc/sudoers -re 's/^%sudo.*/%sudo ALL=(ALL:ALL) NOPASSWD: ALL/g' && \
+    sed -i /etc/sudoers -re 's/^root.*/root ALL=(ALL:ALL) NOPASSWD: ALL/g' && \
+    sed -i /etc/sudoers -re 's/^#includedir.*/## **Removed the include directive** ##"/g' && \
+    echo "www-data ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
+    echo "Customized the sudoers file for passwordless access to the foo user!";
+
+FROM setup_sudo_access as service_build
+ARG APP_ENV=prod
+ENV APP_ENV=$APP_ENV
+ARG APP_SECRET=secret
+ENV APP_SECRET=$APP_SECRET
 
 RUN chmod -R 777 /var/www/web-server/
 RUN chmod -R 777 /var/www/welcome/
 RUN chown -R www-data:www-data /var/www/web-server/
 RUN chown -R www-data:www-data /var/www/welcome/
 
-EXPOSE 80 8080
+USER www-data
+WORKDIR /var/www/web-server/
 
-ENTRYPOINT service php7.4-fpm restart && \
-    service nginx start && \
-    (cd /var/www/web-server/ && \
-    composer install) && \
-    /bin/bash
+EXPOSE 80 8080
+ENTRYPOINT /etc/entrypoint.sh

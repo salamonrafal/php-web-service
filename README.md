@@ -1,4 +1,4 @@
-# php-web-service default
+ # php-web-service default
 
 This is docker image with simply configuration NGINX & PHP 7.4 in one container with PHP Symfony framework.
 
